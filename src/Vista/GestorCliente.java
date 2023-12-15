@@ -6,7 +6,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class GestorCliente extends javax.swing.JInternalFrame {
-
     private int idcliente;
     private Controlador c = new Controlador();
 

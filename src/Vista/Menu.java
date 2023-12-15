@@ -179,11 +179,21 @@ public class Menu extends javax.swing.JFrame {
         menuItemVenta.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemVenta.setForeground(new java.awt.Color(255, 255, 255));
         menuItemVenta.setText("Nueva Venta");
+        menuItemVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemVentaActionPerformed(evt);
+            }
+        });
         menuFactura.add(menuItemVenta);
 
         menuItemGestorVenta.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemGestorVenta.setForeground(new java.awt.Color(255, 255, 255));
         menuItemGestorVenta.setText("Gestionar ventas");
+        menuItemGestorVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemGestorVentaActionPerformed(evt);
+            }
+        });
         menuFactura.add(menuItemGestorVenta);
 
         jMenuBar1.add(menuFactura);
@@ -316,6 +326,18 @@ public class Menu extends javax.swing.JFrame {
         paneD.add(prod);
         prod.setVisible(true);
     }//GEN-LAST:event_menuItemActualizarStockActionPerformed
+
+    private void menuItemVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemVentaActionPerformed
+        Facturar prod = new Facturar();
+        paneD.add(prod);
+        prod.setVisible(true);
+    }//GEN-LAST:event_menuItemVentaActionPerformed
+
+    private void menuItemGestorVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGestorVentaActionPerformed
+        GestorVenta prod = new GestorVenta();
+        paneD.add(prod);
+        prod.setVisible(true);
+    }//GEN-LAST:event_menuItemGestorVentaActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

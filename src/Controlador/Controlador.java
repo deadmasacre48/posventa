@@ -4,8 +4,10 @@ package Controlador;
 import Conexion.Conexion;
 import Modelo.*;
 import Vista.*;
+import java.awt.Toolkit;
 import java.sql.*;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,6 +23,7 @@ public class Controlador {
             while(rs.next()){
                 r = true;
             }
+            cn.close();
         }catch(Exception e){
             System.out.println("Error al iniciar seccion : " + e);
         }
@@ -30,7 +33,7 @@ public class Controlador {
     
     
     
-    
+    //Metodos dedicados unicamente a categoria
     public boolean GuardarCategoria(CategoriaM cate){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -48,7 +51,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean ExisteCategoria(String cate){
         boolean r = false;
         String sql = "select direccion from tbcategoria where direccion = '"+cate+"'";
@@ -60,12 +62,12 @@ public class Controlador {
             while(rs.next()){
                 r = true;
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Consultar Categoria : "+e);
         }
         return r;
     }
-    
     public void CargarCategoria(GestorCategoria gc){
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tablaCategorias.getModel();
@@ -87,7 +89,6 @@ public class Controlador {
             System.out.println("Error al Cargar la tabla Categria : "+e);
         }
     }
-    
     public void enviardcs(GestorCategoria gc, int id){
         Connection cn = Conexion.conectar();
         try{
@@ -101,7 +102,6 @@ public class Controlador {
             System.out.println("Error al Actualizar la tabla Categria : "+e);
         }
     }
-    
     public boolean ActualizarTablaCategoria(CategoriaM cate, int id){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -117,7 +117,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean EliminarCategoria(int id){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -138,6 +137,7 @@ public class Controlador {
     
     
     
+    //Metodos dedicados a producto
     public boolean GuardarProducto(ProductoM cate){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -160,7 +160,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean ExisteProducto(String cate){
         boolean r = false;
         String sql = "select nombre from tbproducto where nombre = '"+cate+"'";
@@ -172,12 +171,12 @@ public class Controlador {
             while(rs.next()){
                 r = true;
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Ver existencia de Producto : "+e);
         }
         return r;
     }
-    
     public void CargarComboCategoria(JComboBox comboboxcategoria){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbcategoria";
@@ -190,11 +189,11 @@ public class Controlador {
             while(rs.next()){
                 comboboxcategoria.addItem(rs.getString("direccion"));
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Cargar categorias en combobox : "+e);
         }
     }
-    
     public void CargarComboProducto(JComboBox comboboxcategoria){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbproducto";
@@ -207,11 +206,11 @@ public class Controlador {
             while(rs.next()){
                 comboboxcategoria.addItem(rs.getString("nombre"));
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Cargar producto en combobox : "+e);
         }
     }
-    
     public int CargarStockProducto(JComboBox comboboxcategoria, int idproducto, JTextField cantidad){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbproducto where nombre = '"+String.valueOf(comboboxcategoria.getSelectedItem())+"'";
@@ -223,12 +222,12 @@ public class Controlador {
                 idproducto = rs.getInt("idproducto");
                 cantidad.setText(String.valueOf( rs.getInt("cantidad")));
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Cargar producto en combobox : "+e);
         }
         return idproducto;
     }
-    
     public boolean ActualizarStockProducto(int idproducto, String cantidad){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -239,12 +238,12 @@ public class Controlador {
             if(st.executeUpdate(sql)>0){
                 r = true;
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Actualizar cantidad de producto : "+e);
         }
         return r;
     }
-    
     public int ObtenerIdCategoria(JComboBox comboboxcategoria, int id){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbcategoria where direccion = '"+comboboxcategoria.getSelectedItem()+"'";
@@ -255,12 +254,12 @@ public class Controlador {
             while(rs.next()){
                 id = rs.getInt("idcategoria");
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al obtener id de categoria : "+e);
         }
         return id;
     }
-    
     public void CargarTablaProducto(GestorProducto gc){
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tableproductos.getModel();
@@ -272,9 +271,7 @@ public class Controlador {
             while(rs.next()){
                 Object[] o = new Object[8];
                 for(int i=0; i<8; i++){
-                    if(i ==5){
-                        //CalcularPrecio(Double.parseDouble(gc.txtprecio.getText()), Integer.parseInt(gc.comboboxiva.getSelectedItem().toString()),gc);
-                    }
+                    
                     o[i] = rs.getObject(i+1);
                 }
                 model.addRow(o);
@@ -284,7 +281,6 @@ public class Controlador {
             System.out.println("Error al Cargar la tabla Producto : "+e);
         }
     }
-    
     public double CalcularPrecio(double precio, int iva, GestorProducto gc){
         int iv = iva;
         switch(iv){
@@ -299,7 +295,6 @@ public class Controlador {
         gc.IVA = (double)Math.round(gc.IVA*100)/100;
         return gc.IVA;
     }
-    
     public void enviardps(GestorProducto gc, int id){
         Connection cn = Conexion.conectar();
         try{
@@ -320,7 +315,6 @@ public class Controlador {
             System.out.println("Error al Actualizar la tabla Producto : "+e);
         }
     }
-    
     public String ObetenerNombreCategoria(int id){
         Connection cn = Conexion.conectar();
         String sql = "select direccion from tbcategoria where idcategoria='"+id+"'";
@@ -338,7 +332,6 @@ public class Controlador {
         }
         return cate;
     }
-    
     public boolean EliminarProducto(int id){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -354,7 +347,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean ActualizarTablaProducto(ProductoM cate, int id){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -380,6 +372,7 @@ public class Controlador {
     
     
     
+    //Metoos dedicados a el apartado de CLIENTE
     public boolean ExisteCliente(String cedu){
         boolean r = false;
         String sql = "select cedula from tbcliente where cedula = '"+cedu+"'";
@@ -391,12 +384,12 @@ public class Controlador {
             while(rs.next()){
                 r = true;
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Ver existencia de Cliente : "+e);
         }
         return r;
     }
-    
     public boolean GuardarCliente(Cliente c, int stado){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -411,7 +404,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public void CargarTablaCliente(GestorCliente gc){
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tablecliente.getModel();
@@ -432,7 +424,6 @@ public class Controlador {
             System.out.println("Error al Cargar la tabla Cliente : "+e);
         }
     }
-    
     public void enviardatoscliente(GestorCliente gc, int id){
         Connection cn = Conexion.conectar();
         try{
@@ -450,7 +441,6 @@ public class Controlador {
             System.out.println("Error al Actualizar la tabla Producto : "+e);
         }
     }
-    
     public boolean EliminarCliente(int id){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -466,7 +456,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean ActualizarTablaCliente(GestorCliente cate, int id, int state){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -487,6 +476,7 @@ public class Controlador {
     
     
     
+    //Metodos dedicados a el apartado USUARIOS
     public boolean GuardarUsuario(Usuario c, int stado){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -501,31 +491,28 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean ExisteUsuario(String cedu){
         boolean r = false;
         String sql = "select usuario from tbusuarios where usuario = '"+cedu+"'";
-        Statement st = null;
         Connection cn = Conexion.conectar();
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 r = true;
             }
+            cn.close();
         }catch(SQLException e){
             System.out.println("Error al Ver existencia de usuarios : "+e);
         }
         return r;
     }
-    
     public void CargarTablaUsuarios(GestorUsuario gc){
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tableUsuarios.getModel();
         String sql = "select * from tbusuarios";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 Object[] o = new Object[7];
@@ -539,7 +526,6 @@ public class Controlador {
             System.out.println("Error al Cargar la tabla Usuarios : "+e);
         }
     }
-    
     public void enviardatosUsuarios(GestorUsuario gc, int id){
         Connection cn = Conexion.conectar();
         try{
@@ -557,7 +543,6 @@ public class Controlador {
             System.out.println("Error al Actualizar la tabla Usuarios : "+e);
         }
     }
-    
     public boolean EliminarUsuario(int id){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -573,7 +558,6 @@ public class Controlador {
         }
         return r;
     }
-    
     public boolean ActualizarTablaUsuarios(GestorUsuario cate, int id, int state){
         boolean r = false;
         Connection cn = Conexion.conectar();
@@ -589,5 +573,132 @@ public class Controlador {
         }
         return r;
     }
+    
+    
+    
+    
+    
+    //Metodos dedicados al apartado de FACTURACION
+    public void CargarComboCliente(JComboBox comboboxcategoria){
+        Connection cn = Conexion.conectar();
+        String sql = "select * from tbcliente";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            comboboxcategoria.removeAllItems();
+            comboboxcategoria.addItem("Seleccione:");
+            while(rs.next()){
+                comboboxcategoria.addItem(rs.getString("nombre")+" "+rs.getString("apellido"));
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Cargar clientes en comboBox : "+e);
+        }
+    }
+    public void BuscarClienteCedula(JComboBox comboboxcategoria, String cedula){
+        Connection cn = Conexion.conectar();
+        String sql = "select nombre, apellido from tbcliente where cedula = '"+cedula+"'";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if(rs.next()){
+                Toolkit.getDefaultToolkit().beep();
+                comboboxcategoria.setSelectedItem(rs.getString("nombre")+" "+rs.getString("apellido"));
+            }else{
+                comboboxcategoria.setSelectedIndex(0);
+                JOptionPane.showMessageDialog(null, "El cliente no existe.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Cargar clientes en comboBox : "+e);
+        }
+    }
+    public void CargarTablaFactura(Facturar gc){
+        Connection cn = Conexion.conectar();
+        DefaultTableModel model = (DefaultTableModel) gc.tablefactura.getModel();
+        String sql = "select idcabezeraventa,idproducto,cantidad,precioUnidad,subTotal,descuento,iva,totalPagar,estado from tbdetalleventa";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                Object[] o = new Object[9];
+                for(int i=0; i<9; i++){
+                    if(i == 1){
+                        o[i] = ObtenerNombreProducto((int) rs.getObject(i+1));
+                    }else{
+                        o[i] = rs.getObject(i+1);
+                    }
+                }
+                model.addRow(o);
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Cargar la tabla Factura : "+e);
+        }
+    }
+    public void InsertarProducto(Facturar p){
+        Connection cn = Conexion.conectar();
+        String sql = "select * from tbproducto where nombre = '"+p.comboboxproducto.getSelectedItem()+"'";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                p.idproducto = rs.getInt("idproducto");
+                p.nombre = rs.getString("nombre");
+                p.cantidad = rs.getInt("cantidad");
+                p.precio = rs.getDouble("precio");
+                p.iva = rs.getDouble("porcentajeIva");
+                CalcularIva(p, p.precio, p.iva);
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Insertar productos a factura: "+e);
+        }
+    }
+    public void CalcularIva(Facturar p, double precio, double iva){
+        int piva = (int) iva;
+        switch(piva){
+            case 0: p.calculoiva = 0.0;
+                break;
+            case 12: p.calculoiva = (p.precio * p.cantidad) * 0.12;
+                break;
+            case 14: p.calculoiva = (p.precio * p.cantidad) * 0.14;
+                break;
+            default: System.out.println("Error en iva");
+                break;
+        }
+    }
+    public boolean insertarProductoDB(Facturar p, int stado){
+        boolean r = false;
+        Connection cn = Conexion.conectar();
+        try{
+            PreparedStatement consul = cn.prepareStatement("insert into tbdetalleventa(idcabezeraventa,idproducto,cantidad,precioUnidad,subTotal,descuento,iva,totalPagar,estado) "
+                    + "value('"+p.axiddetalle+"','"+p.idproducto+"','"+p.cantidadAPedir+"','"+p.precio+"','"+p.subtotal+"','"+1+"','"+p.calculoiva+"','"+p.totalpagar+"','"+stado+"')");
+            if(consul.executeUpdate() >0){
+                r = true;
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al insertar producto de db: "+e);
+        }
+        return r;
+    }
+    public String ObtenerNombreProducto(int id){
+        String nombre ="";
+        Connection cn = Conexion.conectar();
+        try{
+            PreparedStatement ps = cn.prepareStatement("select nombre from tbproducto where idproducto = '"+id+"'");
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                nombre = rs.getString("nombre");
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Obtener nombre de producto: "+e);
+        }
+        return nombre;
+    }
+    
+    
     
 }

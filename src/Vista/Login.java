@@ -103,6 +103,7 @@ public class Login extends javax.swing.JFrame {
         txtclave.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         txtclave.setForeground(new java.awt.Color(0, 0, 0));
         txtclave.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtclave.setText("max");
         txtclave.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
         txtclave.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -114,6 +115,7 @@ public class Login extends javax.swing.JFrame {
         txtuser.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         txtuser.setForeground(new java.awt.Color(0, 0, 0));
         txtuser.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtuser.setText("max");
         txtuser.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
         txtuser.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
