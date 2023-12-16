@@ -1,6 +1,7 @@
 
 package Vista;
 
+import Controlador.ControladorPDF;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import java.awt.Toolkit;
 import java.util.logging.Level;
@@ -10,7 +11,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class Menu extends javax.swing.JFrame {
-    
+    private ControladorPDF cpdf;
     private static JDesktopPane paneD;
     
     public Menu() {
@@ -23,6 +24,7 @@ public class Menu extends javax.swing.JFrame {
         int alto = Toolkit.getDefaultToolkit().getScreenSize().height;
         paneD.setBounds(0,0,ancho,alto);
         this.add(paneD);
+        cpdf = new ControladorPDF();
     }
     
     @SuppressWarnings("unchecked")
@@ -205,21 +207,41 @@ public class Menu extends javax.swing.JFrame {
         menuItemReporteCliente.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemReporteCliente.setForeground(new java.awt.Color(255, 255, 255));
         menuItemReporteCliente.setText("Reportes Cliente");
+        menuItemReporteCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemReporteClienteActionPerformed(evt);
+            }
+        });
         menuReportes.add(menuItemReporteCliente);
 
         menuItemReporteCategoria.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemReporteCategoria.setForeground(new java.awt.Color(255, 255, 255));
         menuItemReporteCategoria.setText("Reportes Categoria");
+        menuItemReporteCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemReporteCategoriaActionPerformed(evt);
+            }
+        });
         menuReportes.add(menuItemReporteCategoria);
 
         menuItemReporteProducto.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemReporteProducto.setForeground(new java.awt.Color(255, 255, 255));
         menuItemReporteProducto.setText("Reportes Productos");
+        menuItemReporteProducto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemReporteProductoActionPerformed(evt);
+            }
+        });
         menuReportes.add(menuItemReporteProducto);
 
         menuItemReporteVenta.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemReporteVenta.setForeground(new java.awt.Color(255, 255, 255));
         menuItemReporteVenta.setText("Reportes Ventas");
+        menuItemReporteVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemReporteVentaActionPerformed(evt);
+            }
+        });
         menuReportes.add(menuItemReporteVenta);
 
         jMenuBar1.add(menuReportes);
@@ -231,6 +253,11 @@ public class Menu extends javax.swing.JFrame {
         menuItemHistorial.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 12)); // NOI18N
         menuItemHistorial.setForeground(new java.awt.Color(255, 255, 255));
         menuItemHistorial.setText("Ver Historial");
+        menuItemHistorial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemHistorialActionPerformed(evt);
+            }
+        });
         menuHistorial.add(menuItemHistorial);
 
         jMenuBar1.add(menuHistorial);
@@ -338,6 +365,28 @@ public class Menu extends javax.swing.JFrame {
         paneD.add(prod);
         prod.setVisible(true);
     }//GEN-LAST:event_menuItemGestorVentaActionPerformed
+
+    private void menuItemReporteClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemReporteClienteActionPerformed
+        cpdf.ReporteCliente();
+    }//GEN-LAST:event_menuItemReporteClienteActionPerformed
+
+    private void menuItemReporteCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemReporteCategoriaActionPerformed
+        cpdf.ReporteCategoria();
+    }//GEN-LAST:event_menuItemReporteCategoriaActionPerformed
+
+    private void menuItemReporteProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemReporteProductoActionPerformed
+        cpdf.ReporteProducto();
+    }//GEN-LAST:event_menuItemReporteProductoActionPerformed
+
+    private void menuItemReporteVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemReporteVentaActionPerformed
+        cpdf.ReporteVenta();
+    }//GEN-LAST:event_menuItemReporteVentaActionPerformed
+
+    private void menuItemHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHistorialActionPerformed
+        Historial prod = new Historial();
+        paneD.add(prod);
+        prod.setVisible(true);
+    }//GEN-LAST:event_menuItemHistorialActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

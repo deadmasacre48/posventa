@@ -10,12 +10,13 @@ import javax.swing.table.DefaultTableModel;
 public class GestorProducto extends javax.swing.JInternalFrame {
     private int idProducto = 0;
     private int idCategoria = 0;
-    ProductoM pm = new ProductoM();
-    Controlador c = new Controlador();
+    private ProductoM pm = new ProductoM();
+    private Controlador c;
     public double IVA=0;
     
     public GestorProducto() {
         initComponents();
+        c = new Controlador();
         c.CargarTablaProducto(this);
         c.CargarComboCategoria(this.comboboxcategoria);
     }

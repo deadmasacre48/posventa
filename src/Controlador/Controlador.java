@@ -72,9 +72,8 @@ public class Controlador {
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tablaCategorias.getModel();
         String sql = "select idcategoria, direccion, estado from tbcategoria";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 Object[] o = new Object[3];
@@ -163,10 +162,9 @@ public class Controlador {
     public boolean ExisteProducto(String cate){
         boolean r = false;
         String sql = "select nombre from tbproducto where nombre = '"+cate+"'";
-        Statement st = null;
         Connection cn = Conexion.conectar();
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 r = true;
@@ -180,9 +178,8 @@ public class Controlador {
     public void CargarComboCategoria(JComboBox comboboxcategoria){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbcategoria";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             comboboxcategoria.removeAllItems();
             comboboxcategoria.addItem("Seleccione:");
@@ -197,9 +194,8 @@ public class Controlador {
     public void CargarComboProducto(JComboBox comboboxcategoria){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbproducto";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             comboboxcategoria.removeAllItems();
             comboboxcategoria.addItem("Seleccione:");
@@ -211,12 +207,29 @@ public class Controlador {
             System.out.println("Error al Cargar producto en combobox : "+e);
         }
     }
+    public void CargarComboProducto(JComboBox comboboxcategoria, Facturar p){
+        Connection cn = Conexion.conectar();
+        String sql = "select * from tbproducto";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            comboboxcategoria.removeAllItems();
+            comboboxcategoria.addItem("Seleccione:");
+            while(rs.next()){
+                if(obtenerCantidadProducto(p, rs.getString("nombre"))>0){
+                    comboboxcategoria.addItem(rs.getString("nombre"));
+                }
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Cargar producto en combobox : "+e);
+        }
+    }
     public int CargarStockProducto(JComboBox comboboxcategoria, int idproducto, JTextField cantidad){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbproducto where nombre = '"+String.valueOf(comboboxcategoria.getSelectedItem())+"'";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             if(rs.next()){
                 idproducto = rs.getInt("idproducto");
@@ -232,9 +245,8 @@ public class Controlador {
         boolean r = false;
         Connection cn = Conexion.conectar();
         String sql = "update tbproducto set cantidad = '"+cantidad+"' where idproducto = '"+idproducto+"'";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             if(st.executeUpdate(sql)>0){
                 r = true;
             }
@@ -247,9 +259,8 @@ public class Controlador {
     public int ObtenerIdCategoria(JComboBox comboboxcategoria, int id){
         Connection cn = Conexion.conectar();
         String sql = "select * from tbcategoria where direccion = '"+comboboxcategoria.getSelectedItem()+"'";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 id = rs.getInt("idcategoria");
@@ -264,9 +275,8 @@ public class Controlador {
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tableproductos.getModel();
         String sql = "select p.idproducto, p.nombre, p.cantidad, p.precio, p.descripcion, p.porcentajeIva, c.direccion, p.estado from tbproducto as p,tbcategoria as c where p.idcategoria = c.idcategoria;";
-        Statement st = null;
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 Object[] o = new Object[8];
@@ -318,10 +328,9 @@ public class Controlador {
     public String ObetenerNombreCategoria(int id){
         Connection cn = Conexion.conectar();
         String sql = "select direccion from tbcategoria where idcategoria='"+id+"'";
-        Statement st = null;
         String cate = "";
         try{
-            st = cn.createStatement();
+            Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(rs.next()){
                 cate = rs.getString("direccion");
@@ -616,7 +625,7 @@ public class Controlador {
     public void CargarTablaFactura(Facturar gc){
         Connection cn = Conexion.conectar();
         DefaultTableModel model = (DefaultTableModel) gc.tablefactura.getModel();
-        String sql = "select idcabezeraventa,idproducto,cantidad,precioUnidad,subTotal,descuento,iva,totalPagar,estado from tbdetalleventa";
+        String sql = "select iddetalleventa,idproducto,cantidad,precioUnidad,subTotal,descuento,iva,totalPagar,estado from tbdetalleventa";
         try{
             Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -698,7 +707,192 @@ public class Controlador {
         }
         return nombre;
     }
+    public void CalcularTotalFactura(Facturar p){
+        p.subtotalgeneral = 0;
+        p.ivageneral = 0;
+        p.descuentogeneral = 0;
+        p.totalpagargeneral = 0;
+        DefaultTableModel model = (DefaultTableModel) p.tablefactura.getModel();
+        for(int i=0; i<model.getRowCount(); i++){
+            p.subtotalgeneral += (double) model.getValueAt(i, 4);
+            p.ivageneral += (double) model.getValueAt(i, 6);
+            p.descuentogeneral += (double) model.getValueAt(i, 5);
+            p.totalpagargeneral += (double) model.getValueAt(i, 7);
+        }
+        p.txtsubtotal.setText(p.subtotalgeneral+"");
+        p.txtDescuento.setText(p.descuentogeneral+"");
+        p.txtIVA.setText(p.ivageneral+"");
+        p.txttotal.setText(p.totalpagargeneral+"");
+    }
+    public int obtenerCantidadProducto(Facturar p, String nombre){
+        int c =0;
+        DefaultTableModel model = (DefaultTableModel) p.tablefactura.getModel();
+        Connection cn = Conexion.conectar();
+        try{
+            PreparedStatement ps = cn.prepareStatement("select cantidad from tbproducto where nombre = '"+nombre+"'");
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                c = rs.getInt("cantidad");
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Obtener cantidad de productos: "+e);
+        }
+        return c;
+    }
+    public boolean DiscontarCantidadProducto(Facturar p){
+        boolean r = false;
+        DefaultTableModel model = (DefaultTableModel) p.tablefactura.getModel();
+        for(int i=0; i<model.getRowCount(); i++){
+            Connection cn = Conexion.conectar();
+            try{
+                if(obtenerCantidadProducto(p, (String) model.getValueAt(i, 1))>0){
+                    PreparedStatement consul = cn.prepareStatement("update tbproducto set cantidad='"+(obtenerCantidadProducto(p, (String) model.getValueAt(i, 1))-(int)model.getValueAt(i, 2))+"' where nombre='"+model.getValueAt(i, 1)+"'");
+                    if(consul.executeUpdate() >0){
+                        r = true;
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(p, "No tienes suficientes productos para " + model.getValueAt(i, 1),
+                            "ERROR",JOptionPane.ERROR_MESSAGE);
+                }
+                cn.close();
+            }catch(SQLException e){
+                System.out.println("Error al Disminuir la cantidad de productos : "+e);
+            }
+        }
+        return r;
+    }
+    public boolean EliminarTodoFactura(Facturar p){
+        boolean r = false;
+        DefaultTableModel model = (DefaultTableModel) p.tablefactura.getModel();
+        for (int i = p.tablefactura.getRowCount(); i > 0; i--) {
+            EliminarUnoFactura((int) model.getValueAt(i-1, 0));
+        }
+        return r;
+    }
+    public boolean EliminarUnoFactura(int id){
+        boolean r = false;
+        Connection cn = Conexion.conectar();
+        try{
+            PreparedStatement consul = cn.prepareStatement("delete from tbdetalleventa where iddetalleventa='"+id+"'");
+            consul.executeUpdate();
+            if(consul.executeUpdate() > 0){
+                r = true;
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Eliminar una factura : "+e);
+        }
+        return r;
+    }
+    public void CalcularEfectivo(Facturar p){
+        double total = Double.parseDouble(p.txttotal.getText());
+        double efe = Double.parseDouble(p.txtefectivo.getText());
+        double sobr = efe-total;
+        
+        p.txtcambio.setText(sobr+"");
+    }
+    public int obtenerIdCliente(String nombre){
+        Connection cn = Conexion.conectar();
+        String sql = "select idcliente from tbcliente where nombre='"+nombre+"'";
+        int cate = 0;
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                cate = rs.getInt("idcliente");
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Obtener id de cliente: "+e);
+        }
+        return cate;
+    }
+    public boolean GuardarFactura(Facturar p,String cliente, Date dia, int state){
+        boolean r = false;
+        Connection cn = Conexion.conectar();
+        try{
+            PreparedStatement consul = cn.prepareStatement("insert into tbcabezeraventa(idcliente,valorPagar,fechaVenta,estado) "
+                    + "value('"+obtenerIdCliente(cliente)+"','"+p.txttotal.getText()+"','"+dia+"','"+state+"')");
+            if(consul.executeUpdate() >0){
+                r = true;
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al GuardarFactura: "+e);
+        }
+        return r;
+    }
     
+    
+    
+    
+    
+    //Metodos dedicados al apartado de ADMINISTRAR VENTAS
+    public void cargarTablaVentas(GestorVenta gv){
+        Connection cn = Conexion.conectar();
+        DefaultTableModel model = (DefaultTableModel) gv.tabledetalles.getModel();
+        String sql = "select idcliente,valorPagar,fechaVenta,estado from tbcabezeraventa";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                Object[] o = new Object[4];
+                for(int i=0; i<4; i++){
+                    if(i==0){
+                        o[i] = obtenerNombreCliente(rs.getInt(i+1));
+                    }else{
+                        o[i] = rs.getObject(i+1);
+                    }
+                }
+                model.addRow(o);
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Cargar la tabla Venta y Detalles: "+e);
+        }
+    }
+    public String obtenerNombreCliente(int id){
+        Connection cn = Conexion.conectar();
+        String nombre = "";
+        String sql = "select * from tbcliente where idcliente='"+id+"'";
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if(rs.next()){
+                nombre = rs.getString("nombre")+" "+rs.getString("apellido");
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Obtener el nombre del cliente : "+e);
+        }
+        return nombre;
+    }
+    
+    
+    
+    
+    
+    //Metodos dedicados al apartado de HISTORIAL
+    public void MostrarVentasSeleccionadas(Historial gc, String fechai, String fechaf){
+        Connection cn = Conexion.conectar();
+        String sql = "select fechaVenta, count(fechaVenta) as Ventas from tbcabezeraventa where fechaVenta between '"+fechai+"' and '"+fechaf+"'";
+        DefaultTableModel model = (DefaultTableModel) gc.tablehistorial.getModel();
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                Object[] o = new Object[2];
+                for(int i=0; i<2; i++){
+                    o[i] = rs.getObject(i+1);
+                }
+                model.addRow(o);
+            }
+            cn.close();
+        }catch(SQLException e){
+            System.out.println("Error al Cargar la tabla Factura : "+e);
+        }
+    }
     
     
 }

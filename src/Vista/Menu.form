@@ -244,6 +244,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Reportes Cliente"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemReporteClienteActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemReporteCategoria">
               <Properties>
@@ -255,6 +258,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Reportes Categoria"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemReporteCategoriaActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemReporteProducto">
               <Properties>
@@ -266,6 +272,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Reportes Productos"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemReporteProductoActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemReporteVenta">
               <Properties>
@@ -277,6 +286,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Reportes Ventas"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemReporteVentaActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -301,6 +313,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Ver Historial"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemHistorialActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>

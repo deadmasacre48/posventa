@@ -1,16 +1,20 @@
-
 package Vista;
 
 import Controlador.Controlador;
+import Controlador.ControladorPDF;
 import java.awt.Toolkit;
+import java.sql.Date;
+import java.time.LocalDate;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
 public class Facturar extends javax.swing.JInternalFrame {
-    private Controlador c = new Controlador();
+
+    private Controlador c;
     private SpinnerNumberModel nummodel;
-    
+    private ControladorPDF cpdf;
+
     public int idproducto = 0;
     public String nombre = "";
     public int cantidad = 0;
@@ -22,16 +26,21 @@ public class Facturar extends javax.swing.JInternalFrame {
     public double calculoiva = 0.0;
     public double totalpagar = 0.0;
     public int axiddetalle = 1;
-    
-    
+
+    public double subtotalgeneral = 0.0;
+    public double descuentogeneral = 0.0;
+    public double ivageneral = 0.0;
+    public double totalpagargeneral = 0.0;
+
     public Facturar() {
         initComponents();
-        nummodel = (SpinnerNumberModel)spinnercantidad.getModel();
+        cpdf = new ControladorPDF();
+        c = new Controlador();
+        nummodel = (SpinnerNumberModel) spinnercantidad.getModel();
         c.CargarComboCliente(comboboxcliente);
-        c.CargarComboProducto(comboboxproducto);
-        c.CargarTablaFactura(this);
+        c.CargarComboProducto(comboboxproducto, this);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -177,22 +186,30 @@ public class Facturar extends javax.swing.JInternalFrame {
         txtsubtotal.setEditable(false);
         txtsubtotal.setForeground(new java.awt.Color(255, 255, 255));
         txtsubtotal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtsubtotal.setText("0.0");
 
         txtDescuento.setEditable(false);
         txtDescuento.setForeground(new java.awt.Color(255, 255, 255));
         txtDescuento.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtDescuento.setText("0.0");
 
         txtIVA.setEditable(false);
         txtIVA.setForeground(new java.awt.Color(255, 255, 255));
         txtIVA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtIVA.setText("0.0");
 
         txttotal.setEditable(false);
         txttotal.setForeground(new java.awt.Color(255, 255, 255));
         txttotal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txttotal.setText("0.0");
 
         txtefectivo.setForeground(new java.awt.Color(255, 255, 255));
         txtefectivo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtefectivo.setText("0.0");
         txtefectivo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtefectivoKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtefectivoKeyTyped(evt);
             }
@@ -272,14 +289,29 @@ public class Facturar extends javax.swing.JInternalFrame {
         btncancela.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btncancela.setForeground(new java.awt.Color(255, 255, 255));
         btncancela.setText("Cancelar");
+        btncancela.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncancelaActionPerformed(evt);
+            }
+        });
 
         btneliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btneliminar.setForeground(new java.awt.Color(255, 255, 255));
         btneliminar.setText("Eliminar");
+        btneliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneliminarActionPerformed(evt);
+            }
+        });
 
         btnregistrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnregistrar.setForeground(new java.awt.Color(255, 255, 255));
         btnregistrar.setText("Registrar");
+        btnregistrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnregistrarActionPerformed(evt);
+            }
+        });
 
         btntargeta.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btntargeta.setForeground(new java.awt.Color(255, 255, 255));
@@ -381,26 +413,26 @@ public class Facturar extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtefectivoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtefectivoKeyTyped
-        if(btntargeta.getText().equals("Targeta")){
+        if (btntargeta.getText().equals("Targeta")) {
             char e = evt.getKeyChar();
-            if(Character.isDigit(e)){
+            if (Character.isDigit(e)) {
 
-            }else{
+            } else {
                 evt.consume();
                 Toolkit.getDefaultToolkit().beep();
             }
-        }else{
-            
+        } else {
+
         }
     }//GEN-LAST:event_txtefectivoKeyTyped
 
     private void btntargetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btntargetaActionPerformed
-        if(btntargeta.getText().equals("Targeta")){
+        if (btntargeta.getText().equals("Targeta")) {
             lbpago.setText("Targeta");
             lbsobrante.setText("Codigo");
             txtcambio.setEditable(true);
             btntargeta.setText("Efectivo");
-        }else if(btntargeta.getText().equals("Efectivo")){
+        } else if (btntargeta.getText().equals("Efectivo")) {
             lbpago.setText("Efectivo");
             lbsobrante.setText("Cambio");
             txtcambio.setEditable(false);
@@ -409,40 +441,41 @@ public class Facturar extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btntargetaActionPerformed
 
     private void btnbuscarproductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscarproductoActionPerformed
-        if(!txtcliente.getText().equals("")){
+        if (!txtcliente.getText().equals("")) {
             c.BuscarClienteCedula(comboboxcliente, txtcliente.getText().trim());
-        }else{
-            JOptionPane.showMessageDialog(null, "Introduce una cedula valida.", 
+        } else {
+            JOptionPane.showMessageDialog(null, "Introduce una cedula valida.",
                     "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnbuscarproductoActionPerformed
 
     private void btnagregarproductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregarproductoActionPerformed
-        if(!comboboxproducto.getSelectedItem().equals("Seleccione:")){
+        if (!comboboxproducto.getSelectedItem().equals("Seleccione:")) {
             DefaultTableModel model = (DefaultTableModel) tablefactura.getModel();
-            for(int i=tablefactura.getRowCount(); i>0; i--){
-                model.removeRow(i-1);
+            for (int i = tablefactura.getRowCount(); i > 0; i--) {
+                model.removeRow(i - 1);
             }
             cantidadAPedir = (int) spinnercantidad.getValue();
             subtotal = precio * cantidadAPedir;
             totalpagar = subtotal + calculoiva + descuento;
-            subtotal = Math.round(subtotal * 100)/100;
-            calculoiva = Math.round(calculoiva * 100)/100;
-            descuento = Math.round(descuento * 100)/100;
-            totalpagar = Math.round(totalpagar * 100)/100;
+            subtotal = Math.round(subtotal * 100) / 100;
+            calculoiva = Math.round(calculoiva * 100) / 100;
+            descuento = Math.round(descuento * 100) / 100;
+            totalpagar = Math.round(totalpagar * 100) / 100;
             c.insertarProductoDB(this, 1);
             c.CargarTablaFactura(this);
-        }else{
-            JOptionPane.showMessageDialog(null, "Seleccione un producto", 
+            c.CalcularTotalFactura(this);
+        } else {
+            JOptionPane.showMessageDialog(null, "Seleccione un producto",
                     "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnagregarproductoActionPerformed
 
     private void spinnercantidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_spinnercantidadKeyTyped
         char c = evt.getKeyChar();
-        if(Character.isDigit(c)){
-            
-        }else{
+        if (Character.isDigit(c)) {
+
+        } else {
             evt.consume();
             Toolkit.getDefaultToolkit().beep();
         }
@@ -453,8 +486,94 @@ public class Facturar extends javax.swing.JInternalFrame {
         nummodel.setMaximum(cantidad);
         nummodel.setValue(1);
     }//GEN-LAST:event_comboboxproductoActionPerformed
-    
-    
+
+    private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
+        if (tablefactura.getSelectedRow() >= 0) {
+            if (!c.EliminarUnoFactura((int) tablefactura.getValueAt(tablefactura.getSelectedRow(), 0))) {
+                DefaultTableModel model = (DefaultTableModel) tablefactura.getModel();
+                for (int i = tablefactura.getRowCount(); i > 0; i--) {
+                    model.removeRow(i - 1);
+                }
+                c.CargarTablaFactura(this);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al remover la fila de factura.",
+                        "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona una fila para removerla.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btneliminarActionPerformed
+
+    private void btnregistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnregistrarActionPerformed
+        String comboclientexd = (String)comboboxcliente.getSelectedItem();
+        String[] nombreyapellido = comboclientexd.split(" ");
+        Date p = Date.valueOf(LocalDate.now());
+        if(!txtefectivo.getText().equals("") && !txtcambio.getText().equals("")){
+            double sobra = Double.parseDouble(txtcambio.getText());
+            if(sobra>=0){
+                if(!comboboxcliente.getSelectedItem().equals("Seleccione:")){
+                    c.GuardarFactura(this, nombreyapellido[0], p, 1);
+                    c.DiscontarCantidadProducto(this);
+                    cpdf.ObtenerDatosCliente(c.obtenerIdCliente(nombreyapellido[0]));
+                    cpdf.generarFacturaPDF(this);
+                    if(!c.EliminarTodoFactura(this)){
+                        DefaultTableModel model = (DefaultTableModel) tablefactura.getModel();
+                        for (int i = tablefactura.getRowCount(); i > 0; i--) {
+                            model.removeRow(i - 1);
+                        }
+                        txtcambio.setText("");
+                        txtIVA.setText("");
+                        txtDescuento.setText("");
+                        txtefectivo.setText("");
+                        txtsubtotal.setText("");
+                        txttotal.setText("");
+                        c.CargarTablaFactura(this);
+                        Toolkit.getDefaultToolkit().beep();
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Error al Limpiar luego de registrar.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(null, "Selecciona un cliente para proceder.",
+                        "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "Dinero Dado no es Suficiente.",
+                        "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Favor insertar el efectivo dado.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnregistrarActionPerformed
+
+    private void btncancelaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncancelaActionPerformed
+        if (!c.EliminarTodoFactura(this)) {
+            DefaultTableModel model = (DefaultTableModel) tablefactura.getModel();
+            for (int i = tablefactura.getRowCount(); i > 0; i--) {
+                model.removeRow(i - 1);
+            }
+            txtcambio.setText("");
+            txtIVA.setText("");
+            txtDescuento.setText("");
+            txtefectivo.setText("");
+            txtsubtotal.setText("");
+            txttotal.setText("");
+            c.CargarTablaFactura(this);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error al remover todas las filas de factura.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btncancelaActionPerformed
+
+    private void txtefectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtefectivoKeyReleased
+        if(lbpago.getText().equals("Efectivo")){
+            c.CalcularEfectivo(this);
+        }
+    }//GEN-LAST:event_txtefectivoKeyReleased
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnagregarproducto;
     public javax.swing.JButton btnbuscarproducto;
